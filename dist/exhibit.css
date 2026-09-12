@@ -47,3 +47,16 @@ main{background:radial-gradient(ellipse at 0% 65%,#244b4930,transparent 34%),#09
 .intro h1:after{content:'';display:block;width:54px;height:3px;background:#ffc640;margin-top:21px;box-shadow:64px 0 0 #ffc64030,82px 0 0 #ffc64014}
 .intro p{font-size:13px;letter-spacing:.2px}.intro .hero-meta{margin-top:18px;gap:12px;font-size:9px}
 @media(max-width:760px){.intro{width:150px;left:20px;top:24px}.title-code{margin-top:12px;font-size:10px}.title-code>span{display:none}.intro h1{font-size:44px;margin:14px 0}.intro h1 .title-gold{font-size:66px}.intro h1:after{margin-top:14px;width:32px}}
+/* Open controls and a cinematic serial-number identity. */
+main{background:#090b0d}
+.console{background:none;border:0;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none}
+.console-top,.console-bottom{border-color:transparent}
+.intro{top:40px;width:264px}
+.hero-designation{position:relative;display:flex;align-items:baseline;gap:8px;margin:28px 0 16px;font-family:'Barlow Condensed',Impact,sans-serif;line-height:1}
+.hero-designation>span{font-size:126px;font-weight:600;color:#f1eee5;letter-spacing:-5px}
+.hero-designation>b{font-size:108px;font-weight:500;letter-spacing:-3px;color:#ffc640}
+.hero-designation>i{position:absolute;bottom:-6px;right:2px;font:9px var(--font);font-style:normal;letter-spacing:2px;color:#969b9d}
+.intro h1{font-family:var(--font);font-style:normal;font-size:23px;font-weight:500;letter-spacing:4px;line-height:1.3;margin:28px 0 20px;color:#e7e9e8;text-shadow:none}
+.intro h1:after{display:none}
+.intro p{font-size:14px;line-height:1.8}.intro .hero-meta{margin-top:28px}
+@media(max-width:760px){.intro{top:26px;width:154px}.intro .eyebrow{font-size:8px;letter-spacing:1px}.hero-designation{margin:16px 0 10px;gap:5px}.hero-designation>span{font-size:76px;letter-spacing:-3px}.hero-designation>b{font-size:64px;letter-spacing:-2px}.hero-designation>i{font-size:7px;letter-spacing:1px}.intro h1{font-size:14px;letter-spacing:2px;margin:22px 0 0}}
