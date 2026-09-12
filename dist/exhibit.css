@@ -63,7 +63,7 @@ main{background:none}
 .inspecting .intro{opacity:1}.inspecting .console{opacity:0;pointer-events:none;transform:translateY(12px)}
 .inspection{left:28px;top:42%;z-index:6}
 @media(max-width:760px){#viewport{position:relative;inset:auto;height:100svh;min-height:560px}.intro{top:25px;left:20px;width:165px}.franchise-title{font-size:14px;letter-spacing:2px;margin-bottom:12px}.intro .eyebrow{font-size:8px;letter-spacing:1px}.intro h1{font-size:54px;margin:18px 0}.gold-title{font-size:78px}.title-rule{width:140px}.view-tools{top:26px;transform:none}}
-.inspection{top:44%;}
+.inspection{left:auto;right:clamp(28px,7vw,110px);top:44%;}
 @media(max-width:760px){.inspection{left:20px;top:38%;width:235px}}
 @media(min-width:1200px){
   #viewport{inset:0 clamp(28px,5vw,96px)}
@@ -74,6 +74,6 @@ main{background:none}
 /* Full-width stage: the controls float over the shared canvas instead of creating a dark rail. */
 main{display:block;position:relative;background:#090b0d}
 #viewport{position:absolute;inset:0;width:100%;height:100%;grid-area:auto}
-.console{position:absolute;left:28px;right:auto;bottom:24px;width:min(500px,calc(100% - 56px));margin:0;z-index:4}
-@media(min-width:1200px){.console{left:clamp(28px,5vw,96px);width:min(500px,calc(100% - 56px))}}
+.console{position:absolute;left:28px;right:auto;bottom:24px;width:min(450px,calc(100% - 56px));margin:0;z-index:4}
+@media(min-width:1200px){.console{left:clamp(28px,5vw,96px);width:min(450px,calc(100% - 56px))}}
 @media(max-width:760px){main{display:flex;flex-direction:column;min-height:0;height:auto}.console{position:relative;left:auto;right:auto;bottom:auto;width:auto;margin:0 14px 18px;z-index:4}#viewport{position:relative;inset:auto;width:100%;height:100svh;min-height:560px;flex:none}}
