@@ -36,7 +36,7 @@ const tint={value:new THREE.Color('#ffc43b')},tintAmount={value:0};
 function finish(color,name){tint.value.set(color);tintAmount.value=name==='Racing yellow'?0:1;$('color-name').textContent=name;document.querySelectorAll('[data-color]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.name===name));}
 document.querySelectorAll('[data-color]').forEach(b=>b.onclick=()=>finish(b.dataset.color,b.dataset.name));$('custom-color').oninput=e=>finish(e.target.value,'Custom finish');
 let parts=[],spots=[],eyeGroup;const qa=new THREE.Quaternion(),qb=new THREE.Quaternion(),va=new THREE.Vector3(),vb=new THREE.Vector3();
-function applyMotion(){const sample=(24+state.progress*90)/2,index=Math.floor(sample),alpha=sample-index;
+function applyMotion(){const eased=state.progress*state.progress*(3-2*state.progress);const sample=(24+eased*90)/2,index=Math.floor(sample),alpha=sample-index;
  for(const part of parts){const a=part.frames[index],b=part.frames[Math.min(index+1,part.frames.length-1)];part.mesh.position.fromArray(a).lerp(vb.fromArray(b),alpha);qa.fromArray(a,3);qb.fromArray(b,3);part.mesh.quaternion.copy(qa.slerp(qb,alpha));part.mesh.visible=!!a[7];if(state.separation>.001){va.copy(part.center).applyQuaternion(part.mesh.quaternion).add(part.mesh.position);va.y-=state.progress>.5?.7:1.7;va.normalize().multiplyScalar(state.separation*.9);part.mesh.position.add(va);}}
  if(eyeGroup)eyeGroup.visible=state.eyes&&state.progress<.04;
 }
