@@ -191,6 +191,10 @@
 
 			function animate() {
 
+				// WebGPURenderer can begin its animation loop before the async
+				// post-processing pipeline has been assembled.
+				if ( ! renderPipeline ) return;
+
 				controls.update();
 
 				TWEEN.update();
