@@ -1,5 +1,6 @@
 import * as THREE from 'three/webgpu';
-import {pass, gaussianBlur, screenUV, blendOverlay} from 'three/tsl';
+import {pass, screenUV, blendOverlay} from 'three/tsl';
+import {gaussianBlur} from 'three/addons/tsl/display/GaussianBlurNode.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
