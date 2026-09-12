@@ -156,7 +156,7 @@
 
 				const vignette = screenUV.distance( .5 ).mul( 1.25 ).clamp().oneMinus().sub( 0.2 );
 
-				renderPipeline = new THREE.RenderPipeline( renderer );
+				renderPipeline = new THREE.PostProcessing( renderer );
 				renderPipeline.outputNode = blendOverlay( scenePassColorBlurred, vignette );
 
 				// tweens
