@@ -47,16 +47,23 @@ main{background:radial-gradient(ellipse at 0% 65%,#244b4930,transparent 34%),#09
 .intro h1:after{content:'';display:block;width:54px;height:3px;background:#ffc640;margin-top:21px;box-shadow:64px 0 0 #ffc64030,82px 0 0 #ffc64014}
 .intro p{font-size:13px;letter-spacing:.2px}.intro .hero-meta{margin-top:18px;gap:12px;font-size:9px}
 @media(max-width:760px){.intro{width:150px;left:20px;top:24px}.title-code{margin-top:12px;font-size:10px}.title-code>span{display:none}.intro h1{font-size:44px;margin:14px 0}.intro h1 .title-gold{font-size:66px}.intro h1:after{margin-top:14px;width:32px}}
-/* Open controls and a cinematic serial-number identity. */
-main{background:#090b0d}
-.console{background:none;border:0;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none}
-.console-top,.console-bottom{border-color:transparent}
-.intro{top:40px;width:264px}
-.hero-designation{position:relative;display:flex;align-items:baseline;gap:8px;margin:28px 0 16px;font-family:'Barlow Condensed',Impact,sans-serif;line-height:1}
-.hero-designation>span{font-size:126px;font-weight:600;color:#f1eee5;letter-spacing:-5px}
-.hero-designation>b{font-size:108px;font-weight:500;letter-spacing:-3px;color:#ffc640}
-.hero-designation>i{position:absolute;bottom:-6px;right:2px;font:9px var(--font);font-style:normal;letter-spacing:2px;color:#969b9d}
-.intro h1{font-family:var(--font);font-style:normal;font-size:23px;font-weight:500;letter-spacing:4px;line-height:1.3;margin:28px 0 20px;color:#e7e9e8;text-shadow:none}
-.intro h1:after{display:none}
-.intro p{font-size:14px;line-height:1.8}.intro .hero-meta{margin-top:28px}
-@media(max-width:760px){.intro{top:26px;width:154px}.intro .eyebrow{font-size:8px;letter-spacing:1px}.hero-designation{margin:16px 0 10px;gap:5px}.hero-designation>span{font-size:76px;letter-spacing:-3px}.hero-designation>b{font-size:64px;letter-spacing:-2px}.hero-designation>i{font-size:7px;letter-spacing:1px}.intro h1{font-size:14px;letter-spacing:2px;margin:22px 0 0}}
+/* One continuous stage behind the identity and floating controls. */
+main{background:none}
+#viewport{position:absolute;inset:0;width:100%;height:100%;grid-area:auto}
+.console{background:linear-gradient(135deg,#24323b70,#10161c80);border:1px solid #d4e2ee24;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:inset 0 1px 0 #ffffff12}
+.intro{top:44px;left:28px;width:280px}
+.franchise-title{font:700 22px 'Barlow Condensed',Impact,sans-serif;letter-spacing:4px;color:#cbd3d7;margin-bottom:23px}
+.intro .eyebrow{font-size:10px;letter-spacing:1.7px;color:#bbae87}
+.intro h1{font-family:'Barlow Condensed',Impact,sans-serif;font-size:96px;line-height:.86;font-style:normal;font-weight:800;letter-spacing:-1px;margin:28px 0 24px;filter:drop-shadow(0 4px 0 #020304) drop-shadow(0 10px 18px #0008)}
+.intro h1>span{display:block;background-clip:text;-webkit-background-clip:text;color:transparent}
+.steel-title{background-image:linear-gradient(#fafcfc 4%,#9aa8b1 44%,#eff5f8 49%,#67757e 53%,#c6d0d5 85%)}
+.gold-title{font-size:134px;letter-spacing:3px;background-image:linear-gradient(#ffeab1,#ffc33d 46%,#a86613 49%,#ffcc4d 57%,#e29e22);margin-top:5px}
+.intro h1:after{display:none}.title-rule{height:3px;width:234px;background:linear-gradient(90deg,#ffc640 0 25%,#ffc64033 25% 90%,transparent 90%);margin-bottom:20px;clip-path:polygon(0 0,100% 0,98% 100%,0 100%)}
+.intro p{font-size:14px}.intro .hero-meta{margin-top:22px}
+@media(max-width:760px){#viewport{position:relative;inset:auto;height:100svh;min-height:560px}.intro{top:25px;left:20px;width:165px}.franchise-title{font-size:14px;letter-spacing:2px;margin-bottom:12px}.intro .eyebrow{font-size:8px;letter-spacing:1px}.intro h1{font-size:54px;margin:18px 0}.gold-title{font-size:78px}.title-rule{width:140px}}
+@media(min-width:1200px){
+  #viewport{inset:0 clamp(28px,5vw,96px)}
+  .intro{left:calc(clamp(28px,5vw,96px) + 28px)}
+  .view-tools{right:calc(clamp(28px,5vw,96px) + 18px)}
+  .console{margin-left:calc(clamp(28px,5vw,96px) + 18px);margin-right:18px}
+}
