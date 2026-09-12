@@ -7,6 +7,7 @@ import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
 import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
 import {UnrealBloomPass} from 'three/addons/postprocessing/UnrealBloomPass.js';
 import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
+import {Reflector} from 'three/addons/objects/Reflector.js';
 const $=id=>document.getElementById(id), reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const state={ready:false,progress:0,target:0,separation:0,explode:0,eyes:false};
 const scan={from:{value:0},to:{value:0},height:{value:4},active:{value:0},elapsed:2,duration:2};
@@ -49,6 +50,7 @@ const controls=new OrbitControls(camera,$('canvas'));controls.target.set(0,1.72,
 const key=new THREE.DirectionalLight('#fff0cf',2.2);key.position.set(-3,6,4);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.camera.left=-4;key.shadow.camera.right=4;key.shadow.camera.top=5;key.shadow.camera.bottom=-4;key.shadow.normalBias=.025;scene.add(key);
 const rim=new THREE.DirectionalLight('#779fff',2);rim.position.set(3,4,-3);scene.add(rim);const fill=new THREE.DirectionalLight('#ffffff',.8);fill.position.set(1,3,5);scene.add(fill);scene.add(new THREE.HemisphereLight('#b8d4ff','#4c3418',.7));
 const floor=new THREE.Mesh(new THREE.PlaneGeometry(100,100),new THREE.MeshStandardMaterial({color:'#080a0d',roughness:.6,metalness:.2}));floor.rotation.x=-Math.PI/2;floor.position.y=-.007;floor.receiveShadow=true;scene.add(floor);
+const reflection=new Reflector(new THREE.PlaneGeometry(18,18),{clipBias:.003,textureWidth:1024,textureHeight:1024,color:new THREE.Color('#24313a'),opacity:.28,transparent:true});reflection.rotation.x=-Math.PI/2;reflection.position.y=-.004;scene.add(reflection);
 for(const radius of [2.1,2.15]){const ring=new THREE.Mesh(new THREE.TorusGeometry(radius,.003,6,160),new THREE.MeshBasicMaterial({color:'#8a692c'}));ring.rotation.x=Math.PI/2;ring.position.y=.002;scene.add(ring);}
 const composer=new EffectComposer(renderer);composer.addPass(new RenderPass(scene,camera));composer.addPass(new UnrealBloomPass(new THREE.Vector2(1,1),.15,.4,2));composer.addPass(new OutputPass());
 let focus=null,formCameraTimer=0;function home(){document.body.classList.remove('inspecting');$('inspection').hidden=true;focus={position:new THREE.Vector3(state.target?4:4,state.target?2.5:2.9,state.explode?10:state.target?6.5:7.6),target:new THREE.Vector3(0,state.target?.7:1.72,0)};}
