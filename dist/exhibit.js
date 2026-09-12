@@ -51,13 +51,13 @@ const rim=new THREE.DirectionalLight('#779fff',2);rim.position.set(3,4,-3);scene
 const floor=new THREE.Mesh(new THREE.PlaneGeometry(100,100),new THREE.MeshStandardMaterial({color:'#080a0d',roughness:.6,metalness:.2}));floor.rotation.x=-Math.PI/2;floor.position.y=-.007;floor.receiveShadow=true;scene.add(floor);
 for(const radius of [2.1,2.15]){const ring=new THREE.Mesh(new THREE.TorusGeometry(radius,.003,6,160),new THREE.MeshBasicMaterial({color:'#8a692c'}));ring.rotation.x=Math.PI/2;ring.position.y=.002;scene.add(ring);}
 const composer=new EffectComposer(renderer);composer.addPass(new RenderPass(scene,camera));composer.addPass(new UnrealBloomPass(new THREE.Vector2(1,1),.15,.4,2));composer.addPass(new OutputPass());
-let focus=null;function home(){document.body.classList.remove('inspecting');$('inspection').hidden=true;focus={position:new THREE.Vector3(state.target?4:4,state.target?2.5:2.9,state.explode?10:state.target?6.5:7.6),target:new THREE.Vector3(0,state.target?.7:1.72,0)};}
+let focus=null,formCameraTimer=0;function home(){document.body.classList.remove('inspecting');$('inspection').hidden=true;focus={position:new THREE.Vector3(state.target?4:4,state.target?2.5:2.9,state.explode?10:state.target?6.5:7.6),target:new THREE.Vector3(0,state.target?.7:1.72,0)};}
 controls.addEventListener('start',()=>{focus=null;controls.autoRotate=false;$('orbit').setAttribute('aria-pressed','false');$('orbit').querySelector('i').textContent='OFF';});
 $('reset').onclick=home;$('close-inspection').onclick=home;$('inspect-back').onclick=home;
 $('orbit').onclick=()=>{controls.autoRotate=!controls.autoRotate;focus=null;$('orbit').setAttribute('aria-pressed',controls.autoRotate);$('orbit').querySelector('i').textContent=controls.autoRotate?'ON':'OFF';};
 $('lighting').onclick=()=>{const night=$('lighting').getAttribute('aria-pressed')!=='true';$('lighting').setAttribute('aria-pressed',night);$('lighting').querySelector('i').textContent=night?'MIDNIGHT':'STUDIO';key.intensity=night?.7:2.2;rim.intensity=night?3:2;fill.intensity=night?.25:.8;scene.environmentIntensity=night?.12:.25;};
 $('eyes').onclick=()=>{state.eyes=!state.eyes;$('eyes').setAttribute('aria-pressed',state.eyes);$('eyes').querySelector('i').textContent=state.eyes?'ON':'OFF';};
-function form(target){state.target=target;state.explode=0;document.body.classList.remove('inspecting');$('inspection').hidden=true;home();}
+function form(target){state.target=target;state.explode=0;document.body.classList.remove('inspecting');$('inspection').hidden=true;clearTimeout(formCameraTimer);if(target===1){focus=null;formCameraTimer=setTimeout(home,350);}else home();}
 $('robot').onclick=()=>form(0);$('vehicle').onclick=()=>form(1);$('transform').onclick=()=>form(1-state.target);
 $('explode').onclick=()=>{state.explode=state.explode>.01?0:1;home();};$('separation').oninput=e=>{state.explode=Number(e.target.value)/100;};
 const tint={value:new THREE.Color('#ffc43b')},tintAmount={value:0};
