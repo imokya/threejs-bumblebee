@@ -32,5 +32,18 @@ main{display:grid;grid-template-columns:320px minmax(0,1fr);grid-template-rows:1
  #viewport{height:100svh;min-height:560px;flex:none;bottom:auto}
  .console{align-self:stretch;margin:0 14px 18px;flex:none}
  .console-body{display:grid;grid-template-columns:1fr 1fr;gap:16px}.form-controls{grid-column:1/-1}.assembly-controls{border:0;padding:0}.finish-label{flex-direction:column}
- .intro{top:24px;left:20px}.intro h1{font-size:51px}.view-tools button{min-width:44px}
+.intro{top:24px;left:20px}.intro h1{font-size:51px}.view-tools button{min-width:44px}
 }
+/* Neon identity and translucent instrument glass. */
+main{background:radial-gradient(ellipse at 0% 65%,#244b4930,transparent 34%),#090b0d}
+.console{background:linear-gradient(135deg,#b9e9e90d,#151c232b);border-color:#c8f4ff24;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:inset 0 1px 0 #ffffff12,0 12px 40px #00000014}
+.intro{left:28px;top:32px;width:264px}
+.title-code{margin-top:24px;font:600 13px var(--font);letter-spacing:3px;color:#ffce61;display:flex;align-items:center;justify-content:space-between}
+.title-code>span{font-size:8px;letter-spacing:1px;color:#748a90}
+.intro h1{font-size:80px;font-style:italic;font-weight:800;line-height:.88;letter-spacing:1px;margin:22px 0 22px;position:relative}
+.intro h1 .title-outline{color:transparent;-webkit-text-stroke:1px #e2f6ffab;text-shadow:0 0 24px #8ddfff16;display:block}
+.intro h1 .title-gold{display:block;font-size:118px;letter-spacing:3px;color:#ffca47;text-shadow:0 0 28px #ffbd342e}
+.intro h1 .title-dot{display:inline;color:#edfff8;text-shadow:0 0 18px #77ffe9aa}
+.intro h1:after{content:'';display:block;width:54px;height:3px;background:#ffc640;margin-top:21px;box-shadow:64px 0 0 #ffc64030,82px 0 0 #ffc64014}
+.intro p{font-size:13px;letter-spacing:.2px}.intro .hero-meta{margin-top:18px;gap:12px;font-size:9px}
+@media(max-width:760px){.intro{width:150px;left:20px;top:24px}.title-code{margin-top:12px;font-size:10px}.title-code>span{display:none}.intro h1{font-size:44px;margin:14px 0}.intro h1 .title-gold{font-size:66px}.intro h1:after{margin-top:14px;width:32px}}
