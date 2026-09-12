@@ -57,7 +57,7 @@
 			const uniformEffector1 = uniform( - 0.2 );
 			const uniformEffector2 = uniform( - 0.2 );
 
-			init();
+			init().catch( error => { console.error(error); document.body.insertAdjacentHTML('beforeend', '<div style="position:fixed;inset:0;display:grid;place-items:center;background:#090b0d;color:#ffc640;font:600 18px Arial;text-align:center;padding:30px">WebGPU reflection could not start in this browser.<br><small style="display:block;color:#aab4bd;margin-top:12px;font-weight:400">Open this test in Chrome with hardware acceleration and WebGPU enabled.</small></div>'); });
 
 			async function init() {
 
