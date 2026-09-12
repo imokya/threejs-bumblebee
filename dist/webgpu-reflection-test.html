@@ -45,7 +45,6 @@
 
 			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-			import { Inspector } from 'three/addons/inspector/Inspector.js';
 
 			import TWEEN from 'three/addons/libs/tween.module.js';
 
@@ -132,7 +131,6 @@
 				renderer.setAnimationLoop( animate );
 				renderer.shadowMap.enabled = true;
 				renderer.toneMapping = THREE.ACESFilmicToneMapping;
-				renderer.inspector = new Inspector();
 				document.body.appendChild( renderer.domElement );
 
 				// controls
