@@ -57,7 +57,7 @@ $('reset').onclick=home;$('close-inspection').onclick=home;$('inspect-back').onc
 $('orbit').onclick=()=>{controls.autoRotate=!controls.autoRotate;focus=null;$('orbit').setAttribute('aria-pressed',controls.autoRotate);$('orbit').querySelector('i').textContent=controls.autoRotate?'ON':'OFF';};
 $('lighting').onclick=()=>{const night=$('lighting').getAttribute('aria-pressed')!=='true';$('lighting').setAttribute('aria-pressed',night);$('lighting').querySelector('i').textContent=night?'MIDNIGHT':'STUDIO';key.intensity=night?.7:2.2;rim.intensity=night?3:2;fill.intensity=night?.25:.8;scene.environmentIntensity=night?.12:.25;};
 $('eyes').onclick=()=>{state.eyes=!state.eyes;$('eyes').setAttribute('aria-pressed',state.eyes);$('eyes').querySelector('i').textContent=state.eyes?'ON':'OFF';};
-function form(target){state.target=target;state.explode=0;focus=null;document.body.classList.remove('inspecting');$('inspection').hidden=true;}
+function form(target){state.target=target;state.explode=0;focus=null;document.body.classList.remove('inspecting');$('inspection').hidden=true;if(target===1&&state.progress<.1){camera.position.set(4,2.9,7.6);controls.target.set(0,1.72,0);controls.update();}}
 $('robot').onclick=()=>form(0);$('vehicle').onclick=()=>form(1);$('transform').onclick=()=>form(1-state.target);
 $('explode').onclick=()=>{state.explode=state.explode>.01?0:1;home();};$('separation').oninput=e=>{state.explode=Number(e.target.value)/100;};
 const tint={value:new THREE.Color('#ffc43b')},tintAmount={value:0};
