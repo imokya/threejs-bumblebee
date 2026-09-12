@@ -63,8 +63,8 @@ main{background:none}
 .inspecting .intro{opacity:1}.inspecting .console{opacity:0;pointer-events:none;transform:translateY(12px)}
 .inspection{left:28px;top:42%;z-index:6}
 @media(max-width:760px){#viewport{position:relative;inset:auto;height:100svh;min-height:560px}.intro{top:25px;left:20px;width:165px}.franchise-title{font-size:14px;letter-spacing:2px;margin-bottom:12px}.intro .eyebrow{font-size:8px;letter-spacing:1px}.intro h1{font-size:54px;margin:18px 0}.gold-title{font-size:78px}.title-rule{width:140px}.view-tools{top:26px;transform:none}}
-.inspection{left:auto;right:clamp(28px,7vw,110px);top:44%;}
-@media(max-width:760px){.inspection{left:20px;top:38%;width:235px}}
+.inspection{left:auto;right:clamp(28px,7vw,110px);top:58%;transform:translateY(-50%);}
+@media(max-width:760px){.inspection{left:20px;right:auto;top:38%;transform:none;width:235px}}
 @media(min-width:1200px){
   #viewport{inset:0 clamp(28px,5vw,96px)}
   .intro{left:calc(clamp(28px,5vw,96px) + 28px)}
