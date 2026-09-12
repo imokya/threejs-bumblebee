@@ -26,7 +26,7 @@ main{display:grid;grid-template-columns:320px minmax(0,1fr);grid-template-rows:1
 .assembly-controls{border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px 0}
 .finish-label{flex-direction:row}.swatches{justify-content:space-between}.console-bottom{padding:12px;font-size:9px;gap:8px}
 .intro{left:32px;top:36px}.intro h1{font-size:76px}.intro .eyebrow{font-size:10px}.hero-meta{margin-top:20px;font-size:10px}.intro p{font-size:14px}
-.ambient{display:none}.view-hint{display:none}.view-tools{right:18px;top:20px;gap:7px}.view-tools button{padding:8px;min-width:95px}
+.ambient{display:none}.view-hint{display:none}.view-tools{right:18px;top:50%;transform:translateY(-50%);gap:7px}.view-tools button{padding:8px;min-width:95px}
 @media(max-width:760px){
  main{height:auto;min-height:0;display:flex;flex-direction:column;overflow:visible}
  #viewport{height:100svh;min-height:560px;flex:none;bottom:auto}
@@ -60,7 +60,7 @@ main{background:none}
 .gold-title{font-size:134px;letter-spacing:3px;background-image:linear-gradient(#ffeab1,#ffc33d 46%,#a86613 49%,#ffcc4d 57%,#e29e22);margin-top:5px}
 .intro h1:after{display:none}.title-rule{height:3px;width:234px;background:linear-gradient(90deg,#ffc640 0 25%,#ffc64033 25% 90%,transparent 90%);margin-bottom:20px;clip-path:polygon(0 0,100% 0,98% 100%,0 100%)}
 .intro p{font-size:14px}.intro .hero-meta{margin-top:22px}
-@media(max-width:760px){#viewport{position:relative;inset:auto;height:100svh;min-height:560px}.intro{top:25px;left:20px;width:165px}.franchise-title{font-size:14px;letter-spacing:2px;margin-bottom:12px}.intro .eyebrow{font-size:8px;letter-spacing:1px}.intro h1{font-size:54px;margin:18px 0}.gold-title{font-size:78px}.title-rule{width:140px}}
+@media(max-width:760px){#viewport{position:relative;inset:auto;height:100svh;min-height:560px}.intro{top:25px;left:20px;width:165px}.franchise-title{font-size:14px;letter-spacing:2px;margin-bottom:12px}.intro .eyebrow{font-size:8px;letter-spacing:1px}.intro h1{font-size:54px;margin:18px 0}.gold-title{font-size:78px}.title-rule{width:140px}.view-tools{top:26px;transform:none}}
 @media(min-width:1200px){
   #viewport{inset:0 clamp(28px,5vw,96px)}
   .intro{left:calc(clamp(28px,5vw,96px) + 28px)}
