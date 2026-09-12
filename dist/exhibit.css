@@ -82,3 +82,4 @@ main{display:block;position:relative;background:#090b0d}
 @media(max-width:760px){.inspection.detail-left,.inspection.detail-right{left:20px;right:auto;top:38%;transform:none}}
 .view-tools{gap:14px}
 @media(max-width:760px){.view-tools{gap:8px}}
+.inspecting .console{opacity:1;pointer-events:auto;transform:none}
