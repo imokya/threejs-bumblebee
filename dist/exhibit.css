@@ -10,9 +10,9 @@
 @media(max-width:760px){.console-top,.console-bottom,.finish-label,.finish-label strong,.view-hint,footer{font-size:10px}.console-id,#part-count{display:none}.transform,.assembly,.segmented button{font-size:13px}.swatches{gap:7px}.view-hint{bottom:253px}}
 .view-hint{bottom:255px}
 /* Model-first layout: use the former header space for the live exhibit. */
-main{height:calc(100svh - 40px)}
-.console{background:transparent;backdrop-filter:none;box-shadow:none;border-color:#ffffff09;--line:#ffffff09}
+main{height:100svh}
+.console{background:rgba(14,18,23,.48);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:none;border-color:#ffffff14;--line:#ffffff12}
 .console-top,.console-bottom{background:transparent}
 .segmented{background:#080a0b40;border-color:#ffffff12}
 .segmented button[aria-pressed=true]{background:#ffffff0e}
-@media(max-width:760px){main{height:calc(100svh - 30px)}.view-tools{gap:6px}.view-tools button{height:38px}}
+@media(max-width:760px){.view-tools{gap:6px}.view-tools button{height:38px}}
