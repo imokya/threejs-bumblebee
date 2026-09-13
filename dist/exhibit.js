@@ -1,5 +1,5 @@
 import * as THREE from 'three/webgpu';
-import {pass, reflector, screenUV, blendOverlay} from 'three/tsl';
+import {pass, reflector, screenUV, blendOverlay, uniform} from 'three/tsl';
 import {gaussianBlur} from 'three/addons/tsl/display/GaussianBlurNode.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
@@ -33,7 +33,7 @@ function updateScan(dt){
   scan.height.value=THREE.MathUtils.lerp(scanBounds.max.y+.12,scanBounds.min.y-.12,t);
   if(t===1){scan.active.value=0;scan.from.value=scan.to.value;$('wireframe').disabled=false;$('wireframe').querySelector('i').textContent=scan.to.value?'MESH':'SOLID';$('wireframe').setAttribute('aria-label',scan.to.value?'Scan back to solid materials':'Scan into wireframe view');}
  }
- for(const p of parts)p.wire.visible=scan.active.value===1||scan.to.value===1;
+ for(const p of parts){p.wire.visible=scan.active.value===1||scan.to.value===1;if(p.wireOpacity)p.wireOpacity.value=p.wire.visible?.28:0;}
 }
 let renderer;
 function fail(error){console.error(error);$('loading').classList.remove('finished');$('load-title').textContent='The guardian could not load.';$('load-status').textContent='Please reload the page. WebGL and a local web server are required.';$('retry').hidden=false;}
@@ -77,7 +77,7 @@ async function load(){const draco=new DRACOLoader();draco.setDecoderPath('/vendo
  #include <opaque_fragment>`);shader.uniforms.armorTint=tint;shader.uniforms.armorAmount=tintAmount;shader.fragmentShader='uniform vec3 armorTint; uniform float armorAmount; uniform float colorProgress; uniform float colorHeight; uniform vec3 colorStart; uniform float amountStart;\n'+shader.fragmentShader;shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
  float yellowMask=smoothstep(.035,.16,diffuseColor.r-diffuseColor.b)*smoothstep(.02,.12,diffuseColor.g-diffuseColor.b)*smoothstep(.07,.3,diffuseColor.r);
  float colorBand=smoothstep(colorHeight-.28,colorHeight+.32,scanWorldY)*colorProgress; float amountBand=mix(amountStart,armorAmount,colorBand); vec3 bandTint=mix(colorStart,armorTint,colorBand); diffuseColor.rgb=mix(diffuseColor.rgb,bandTint*max(diffuseColor.r,diffuseColor.g),yellowMask*amountBand);`);};mat.customProgramCacheKey=()=> 'guardian-scan-hologram-v2';});
- for(const part of parts){const wireMat=new THREE.MeshBasicNodeMaterial({color:new THREE.Color(.08,2.4,1.5),transparent:true,opacity:.28,wireframe:true,depthWrite:false,toneMapped:false});part.wire=new THREE.Mesh(part.mesh.geometry,wireMat);part.wire.visible=false;part.wire.raycast=()=>{};part.mesh.add(part.wire);}
+ for(const part of parts){const wireMat=new THREE.MeshBasicNodeMaterial({color:new THREE.Color(.08,2.4,1.5),transparent:true,wireframe:true,depthWrite:false,toneMapped:false});const wireOpacity=uniform(0);wireMat.opacityNode=wireOpacity;part.wireOpacity=wireOpacity;part.wire=new THREE.Mesh(part.mesh.geometry,wireMat);part.wire.visible=false;part.wire.raycast=()=>{};part.mesh.add(part.wire);}
  if(parts.filter(p=>p.mesh.name.startsWith('Original_robot')).length!==177)throw Error('Incomplete robot geometry');applyMotion();scene.updateMatrixWorld(true);
  const head=parts.find(p=>p.mesh.name==='Original_robot_3')?.mesh;if(head){eyeGroup=new THREE.Group();head.add(eyeGroup);for(const x of [-.074,.074]){const eye=new THREE.Mesh(new THREE.SphereGeometry(.019,16,12),new THREE.MeshBasicMaterial({color:new THREE.Color(.2,3,7)}));eye.position.copy(head.worldToLocal(new THREE.Vector3(x,3.31,.32)));eye.scale.set(1,.8,.5);eyeGroup.add(eye);const glow=new THREE.PointLight(0x35aaff,.7,.5,2);glow.position.copy(eye.position);glow.position.z+=.04;eyeGroup.add(glow);}eyeGroup.visible=false;}
  addHotspot('Original_robot_3','Optical core','A familiar blue gaze. Activate the optics to bring the guardian to life.',[0,3.31,.28]);addHotspot('Original_robot_23','Chest armor','The signature vintage bodywork becomes the guardian’s protective chest armor.',[0,2.7,.4]);addHotspot('Original_robot_1','Shoulder assembly','Explore the layered armor and mechanical components in exploded view.',[.64,2.91,.06]);
