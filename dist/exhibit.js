@@ -97,7 +97,7 @@ async function load(){const draco=new DRACOLoader();draco.setDecoderPath('/vendo
  mesh.material=mat;
  });
  {
- const wireMat=new THREE.LineBasicMaterial({color:0x16e6c0,transparent:true,opacity:.42,blending:THREE.AdditiveBlending,depthTest:false,depthWrite:false,toneMapped:false});
+ const wireMat=new THREE.LineBasicMaterial({color:0x16e6c0,transparent:true,opacity:.14,blending:THREE.AdditiveBlending,depthTest:false,depthWrite:false,toneMapped:false});
  for(const part of parts){const wireGeometry=new THREE.WireframeGeometry(part.mesh.geometry);part.wire=new THREE.LineSegments(wireGeometry,wireMat);part.wire.frustumCulled=false;part.wire.visible=false;part.wire.raycast=()=>{};part.mesh.add(part.wire);}
  }
  if(parts.filter(p=>p.mesh.name.startsWith('Original_robot')).length!==177)throw Error('Incomplete robot geometry');applyMotion();scene.updateMatrixWorld(true);
