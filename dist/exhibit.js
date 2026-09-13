@@ -96,24 +96,24 @@ async function load(){const draco=new DRACOLoader();draco.setDecoderPath('/vendo
  mat.emissiveNode=materialEmissive.add(vec3(.15,5,9).mul(laser));
  mesh.material=mat;
  });
- for(const part of parts){
+ {
  const grid=positionWorld.div(.055);
  const normal=normalize(cross(dFdx(positionWorld),dFdy(positionWorld)));
  const lines=abs(fract(grid.sub(.5)).sub(.5)).div(max(fwidth(grid),vec3(.0001))).add(step(vec3(.88),abs(normal)).mul(100));
  const line=smoothstep(.25,1.05,min(lines.x,min(lines.y,lines.z))).oneMinus();
  const region=mix(scan.from,scan.to,step(scan.height,positionWorld.y));
- const wireMat=new THREE.MeshBasicNodeMaterial({transparent:true,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,depthWrite:false,toneMapped:false});
+ const wireMat=new THREE.MeshBasicNodeMaterial({transparent:true,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,depthWrite:false,toneMapped:false,forceSinglePass:true});
  wireMat.colorNode=vec3(.08,2.4,1.5);wireMat.opacityNode=line.mul(.16);wireMat.maskNode=region.greaterThan(.5).and(line.greaterThan(.01));
- part.wire=new THREE.Mesh(part.mesh.geometry,wireMat);part.wire.visible=false;part.wire.raycast=()=>{};part.mesh.add(part.wire);
+ for(const part of parts){part.wire=new THREE.Mesh(part.mesh.geometry,wireMat);part.wire.frustumCulled=false;part.wire.visible=false;part.wire.raycast=()=>{};part.mesh.add(part.wire);}
  }
  if(parts.filter(p=>p.mesh.name.startsWith('Original_robot')).length!==177)throw Error('Incomplete robot geometry');applyMotion();scene.updateMatrixWorld(true);
  const head=parts.find(p=>p.mesh.name==='Original_robot_3')?.mesh;if(head){eyeGroup=new THREE.Group();head.add(eyeGroup);for(const x of [-.074,.074]){const eye=new THREE.Mesh(new THREE.SphereGeometry(.019,16,12),new THREE.MeshBasicMaterial({color:new THREE.Color(.2,3,7)}));eye.position.copy(head.worldToLocal(new THREE.Vector3(x,3.31,.32)));eye.scale.set(1,.8,.5);eyeGroup.add(eye);const glow=new THREE.PointLight(0x35aaff,.7,.5,2);glow.position.copy(eye.position);glow.position.z+=.04;eyeGroup.add(glow);}eyeGroup.visible=false;}
  addHotspot('Original_robot_3','Optical core','A familiar blue gaze. Activate the optics to bring the guardian to life.',[0,3.31,.28]);addHotspot('Original_robot_23','Chest armor','The signature vintage bodywork becomes the guardian’s protective chest armor.',[0,2.7,.4]);addHotspot('Original_robot_1','Shoulder assembly','Explore the layered armor and mechanical components in exploded view.',[.64,2.91,.06]);
  // Compile hidden vehicle components before the first transformation.
  const visibility=parts.map(p=>p.mesh.visible);
- for(const p of parts)p.mesh.visible=true;
+ for(const p of parts){p.mesh.visible=true;p.wire.visible=true;}
  await renderer.compileAsync(scene,camera);
- parts.forEach((p,i)=>{p.mesh.visible=visibility[i];});
+ parts.forEach((p,i)=>{p.mesh.visible=visibility[i];p.wire.visible=false;});
  state.ready=true;for(const id of ['robot','vehicle','transform','explode','separation','eyes','wireframe'])$(id).disabled=false;$('load-progress').style.width='100%';$('loading').classList.add('finished');draco.dispose();window.__exhibit={state,parts:parts.length};}
 function resize(){const w=$('viewport').clientWidth,h=$('viewport').clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.clearViewOffset();camera.updateProjectionMatrix();}new ResizeObserver(resize).observe($('viewport'));resize();
 let last=performance.now();function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;if(state.ready){colorProgress.value=Math.min(1,colorProgress.value+dt/.9);const colorEase=colorProgress.value*colorProgress.value*(3-2*colorProgress.value);colorHeight.value=THREE.MathUtils.lerp(4,-.05,colorEase);state.separation=THREE.MathUtils.damp(state.separation,state.explode,7,dt);if(Math.abs(state.separation-state.explode)<.001)state.separation=state.explode;if(state.separation<.01&&state.progress!==state.target)state.progress=THREE.MathUtils.clamp(state.progress+Math.sign(state.target-state.progress)*Math.min(dt/2.65,Math.abs(state.target-state.progress)),0,1);applyMotion();const moving=Math.abs(state.progress-state.target)>.001;for(const [id,value]of [['robot',0],['vehicle',1]])$(id).setAttribute('aria-pressed',state.target===value);$('transform-label').textContent=state.target?'Transform to robot':'Transform to vehicle';$('explode').disabled=moving;$('separation').disabled=moving;$('eyes').disabled=state.progress>.04;$('explode').setAttribute('aria-pressed',state.explode>.01);$('assembly-label').textContent=state.explode>.01?'Reassemble':'Exploded view';$('separation').value=Math.round(state.separation*100);$('separation-value').textContent=`${Math.round(state.separation*100)}%`;$('status').textContent=moving?'TRANSFORMATION IN PROGRESS':state.separation>.01?'COMPONENT EXPLORATION':state.target?'VEHICLE SYSTEMS READY':'GUARDIAN SYSTEMS READY';$('sequence-label').textContent=moving?'MECHANICAL SEQUENCE':state.target?'VEHICLE STANDBY':'GUARDIAN STANDBY';$('sequence-progress').style.width=`${state.progress*100}%`;$('sequence-number').textContent=`${String(Math.round(state.progress*100)).padStart(2,'0')} / 100`;$('form-index').textContent=state.target?'02 / VEHICLE FORM':'01 / ROBOT FORM';$('part-count').textContent=state.target?'VEHICLE CONFIGURATION':'177 ORIGINAL ROBOT COMPONENTS';}
