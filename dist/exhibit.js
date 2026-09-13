@@ -46,8 +46,8 @@ const perlin=await new THREE.TextureLoader().loadAsync('/textures/noises/perlin/
 perlin.wrapS=perlin.wrapT=THREE.RepeatWrapping;perlin.colorSpace=THREE.SRGBColorSpace;
 const floorRoughness=texture(perlin,uv().mul(30)).r.mul(2).saturate();
 const floorMaterial=new THREE.MeshStandardNodeMaterial({transparent:true,metalness:1});
-floorMaterial.roughnessNode=floorRoughness.mul(.42);
-floorMaterial.colorNode=vec4(textureBicubic(reflection,floorRoughness.mul(.58)).rgb.mul(1.35),rangeFogFactor(12,30).oneMinus());
+floorMaterial.roughnessNode=floorRoughness.mul(.2);
+floorMaterial.colorNode=vec4(textureBicubic(reflection,floorRoughness.mul(.42)).rgb.mul(1.9),rangeFogFactor(12,30).oneMinus());
 const floor=new THREE.Mesh(new THREE.PlaneGeometry(100,100),floorMaterial);
 floor.rotation.x=-Math.PI/2;floor.position.y=floorY;scene.add(floor);
 
