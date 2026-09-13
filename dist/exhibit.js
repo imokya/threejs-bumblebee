@@ -40,14 +40,14 @@ const key=new THREE.DirectionalLight('#fff0cf',2.2);key.position.set(-3,6,4);key
 const rim=new THREE.DirectionalLight('#779fff',2);rim.position.set(3,4,-3);scene.add(rim);const fill=new THREE.DirectionalLight('#ffffff',.8);fill.position.set(1,3,5);scene.add(fill);scene.add(new THREE.HemisphereLight('#b8d4ff','#4c3418',.7));
 // Roughness reflection: mipmapped planar reflection sampled with bicubic filtering.
 const floorY=-.007;
-const reflection=reflector({resolutionScale:.5,bounces:false,generateMipmaps:true});
+const reflection=reflector({resolutionScale:.75,bounces:false,generateMipmaps:true});
 reflection.target.rotation.x=-Math.PI/2;reflection.target.position.y=floorY;scene.add(reflection.target);
 const perlin=await new THREE.TextureLoader().loadAsync('/textures/noises/perlin/rgb-256x256.png');
 perlin.wrapS=perlin.wrapT=THREE.RepeatWrapping;perlin.colorSpace=THREE.SRGBColorSpace;
 const floorRoughness=texture(perlin,uv().mul(30)).r.mul(2).saturate();
 const floorMaterial=new THREE.MeshStandardNodeMaterial({transparent:true,metalness:1});
 floorMaterial.roughnessNode=floorRoughness.mul(.2);
-floorMaterial.colorNode=vec4(textureBicubic(reflection,floorRoughness.mul(.9)).rgb.mul(1.65),rangeFogFactor(12,30).oneMinus());
+floorMaterial.colorNode=vec4(textureBicubic(reflection,floorRoughness.mul(.42)).rgb.mul(1.9),rangeFogFactor(12,30).oneMinus());
 const floor=new THREE.Mesh(new THREE.PlaneGeometry(100,100),floorMaterial);
 floor.rotation.x=-Math.PI/2;floor.position.y=floorY;scene.add(floor);
 
@@ -66,14 +66,23 @@ const tint=uniform(new THREE.Color('#ffc43b')),tintAmount=uniform(0),colorStart=
 const colorProgress=uniform(0),colorHeight=uniform(4);
 function finish(color,name){colorStart.value.copy(tint.value);amountStart.value=tintAmount.value;tint.value.set(color);tintAmount.value=name==='Racing yellow'?0:1;colorProgress.value=0;colorHeight.value=4;$('color-name').textContent=name;document.querySelectorAll('[data-color]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.name===name));}
 document.querySelectorAll('[data-color]').forEach(b=>b.onclick=()=>finish(b.dataset.color,b.dataset.name));$('custom-color').oninput=e=>finish(e.target.value,'Custom finish');
-let parts=[],spots=[],eyeGroup;const qa=new THREE.Quaternion(),qb=new THREE.Quaternion(),va=new THREE.Vector3(),vb=new THREE.Vector3();
+let parts=[],spots=[],eyeGroup,modelRoot;const explodedBounds=new THREE.Box3(),explodedPartBounds=new THREE.Box3();const qa=new THREE.Quaternion(),qb=new THREE.Quaternion(),va=new THREE.Vector3(),vb=new THREE.Vector3();
 function applyMotion(){const eased=state.progress*state.progress*(3-2*state.progress);const sample=(24+eased*90)/2,index=Math.floor(sample),alpha=sample-index;
  for(const part of parts){const a=part.frames[index],b=part.frames[Math.min(index+1,part.frames.length-1)];part.mesh.position.fromArray(a).lerp(vb.fromArray(b),alpha);qa.fromArray(a,3);qb.fromArray(b,3);part.mesh.quaternion.copy(qa.slerp(qb,alpha));part.mesh.visible=!!a[7];if(state.separation>.001){va.copy(part.center).applyQuaternion(part.mesh.quaternion).add(part.mesh.position);va.y-=state.progress>.5?.7:1.7;va.normalize().multiplyScalar(state.separation*.9);part.mesh.position.add(va);}}
+ if(modelRoot){
+ const scale=1-state.separation*.24;
+ modelRoot.scale.setScalar(scale);modelRoot.position.y=0;
+ if(state.separation>0){
+ modelRoot.updateMatrixWorld(true);explodedBounds.makeEmpty();
+ for(const p of parts)if(p.mesh.visible){explodedPartBounds.copy(p.mesh.geometry.boundingBox).applyMatrix4(p.mesh.matrixWorld);explodedBounds.union(explodedPartBounds);}
+ modelRoot.position.y=Math.max(0,.025-explodedBounds.min.y);
+ }
+ }
  if(eyeGroup)eyeGroup.visible=state.eyes&&state.progress<.04;
 }
 function addHotspot(name,title,copy,position){const mesh=parts.find(p=>p.mesh.name===name)?.mesh;if(!mesh)return;const local=mesh.worldToLocal(new THREE.Vector3(...position));const button=document.createElement('button');button.className='hotspot';button.textContent='+';button.dataset.label=title.toUpperCase();button.setAttribute('aria-label',`Inspect ${title}`);$('hotspots').append(button);const spot={mesh,local,button};spots.push(spot);button.onclick=()=>{const point=mesh.localToWorld(local.clone());const screen=point.clone().project(camera);const vw=$('viewport').clientWidth,vh=$('viewport').clientHeight,sx=(screen.x*.5+.5)*vw,sy=(-screen.y*.5+.5)*vh;const panelW=280,panelH=190;const shoulder=title.toLowerCase().includes('shoulder');let px=shoulder?vw-panelW-450:(screen.x>0?sx-panelW-28:sx+28);let py=sy-panelH*.5;px=Math.max(16,Math.min(vw-panelW-16,px));py=Math.max(80,Math.min(vh-panelH-24,py));$('inspection').style.left=`${px}px`;$('inspection').style.right='auto';$('inspection').style.top=`${py}px`;$('inspection').style.transform='none';$('inspection').classList.toggle('detail-left',screen.x>0);$('inspection').classList.toggle('detail-right',screen.x<=0);focus={position:point.clone().add(new THREE.Vector3(1.25,.35,3.15)),target:point};controls.autoRotate=false;document.body.classList.add('inspecting');$('inspection').hidden=false;$('inspect-title').textContent=title;$('inspect-copy').textContent=copy;};}
 async function load(){const draco=new DRACOLoader();draco.setDecoderPath('/vendor/draco/');const loader=new GLTFLoader();loader.setDRACOLoader(draco);const [gltf,motion]=await Promise.all([loader.loadAsync('/assets/guardian.glb',e=>{$('load-progress').style.width=`${e.total?Math.min(95,e.loaded/e.total*95):45}%`;}),fetch('/assets/guardian-motion.json').then(r=>{if(!r.ok)throw Error('Motion data unavailable');return r.json();})]);
- scene.add(gltf.scene);gltf.scene.traverse(mesh=>{if(!mesh.isMesh)return;const frames=motion.parts[mesh.name];if(!frames)return;mesh.castShadow=true;mesh.receiveShadow=true;mesh.frustumCulled=false;mesh.geometry.computeBoundingBox();parts.push({mesh,frames,center:mesh.geometry.boundingBox.getCenter(new THREE.Vector3())});const source=mesh.material;
+ modelRoot=gltf.scene;scene.add(modelRoot);gltf.scene.traverse(mesh=>{if(!mesh.isMesh)return;const frames=motion.parts[mesh.name];if(!frames)return;mesh.castShadow=true;mesh.receiveShadow=true;mesh.frustumCulled=false;mesh.geometry.computeBoundingBox();parts.push({mesh,frames,center:mesh.geometry.boundingBox.getCenter(new THREE.Vector3())});const source=mesh.material;
  const mat=new THREE.MeshStandardNodeMaterial();
  for(const key of ['map','normalMap','roughnessMap','metalnessMap','aoMap','emissiveMap','roughness','metalness','aoMapIntensity','side'])if(source[key]!==undefined)mat[key]=source[key];
  mat.color.copy(source.color);mat.emissive.copy(source.emissive);mat.normalScale.copy(source.normalScale);
@@ -100,6 +109,11 @@ async function load(){const draco=new DRACOLoader();draco.setDecoderPath('/vendo
  if(parts.filter(p=>p.mesh.name.startsWith('Original_robot')).length!==177)throw Error('Incomplete robot geometry');applyMotion();scene.updateMatrixWorld(true);
  const head=parts.find(p=>p.mesh.name==='Original_robot_3')?.mesh;if(head){eyeGroup=new THREE.Group();head.add(eyeGroup);for(const x of [-.074,.074]){const eye=new THREE.Mesh(new THREE.SphereGeometry(.019,16,12),new THREE.MeshBasicMaterial({color:new THREE.Color(.2,3,7)}));eye.position.copy(head.worldToLocal(new THREE.Vector3(x,3.31,.32)));eye.scale.set(1,.8,.5);eyeGroup.add(eye);const glow=new THREE.PointLight(0x35aaff,.7,.5,2);glow.position.copy(eye.position);glow.position.z+=.04;eyeGroup.add(glow);}eyeGroup.visible=false;}
  addHotspot('Original_robot_3','Optical core','A familiar blue gaze. Activate the optics to bring the guardian to life.',[0,3.31,.28]);addHotspot('Original_robot_23','Chest armor','The signature vintage bodywork becomes the guardian’s protective chest armor.',[0,2.7,.4]);addHotspot('Original_robot_1','Shoulder assembly','Explore the layered armor and mechanical components in exploded view.',[.64,2.91,.06]);
+ // Compile hidden vehicle components before the first transformation.
+ const visibility=parts.map(p=>p.mesh.visible);
+ for(const p of parts)p.mesh.visible=true;
+ await renderer.compileAsync(scene,camera);
+ parts.forEach((p,i)=>{p.mesh.visible=visibility[i];});
  state.ready=true;for(const id of ['robot','vehicle','transform','explode','separation','eyes','wireframe'])$(id).disabled=false;$('load-progress').style.width='100%';$('loading').classList.add('finished');draco.dispose();window.__exhibit={state,parts:parts.length};}
 function resize(){const w=$('viewport').clientWidth,h=$('viewport').clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.clearViewOffset();camera.updateProjectionMatrix();}new ResizeObserver(resize).observe($('viewport'));resize();
 let last=performance.now();function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;if(state.ready){colorProgress.value=Math.min(1,colorProgress.value+dt/.9);const colorEase=colorProgress.value*colorProgress.value*(3-2*colorProgress.value);colorHeight.value=THREE.MathUtils.lerp(4,-.05,colorEase);state.separation=THREE.MathUtils.damp(state.separation,state.explode,7,dt);if(Math.abs(state.separation-state.explode)<.001)state.separation=state.explode;if(state.separation<.01&&state.progress!==state.target)state.progress=THREE.MathUtils.clamp(state.progress+Math.sign(state.target-state.progress)*Math.min(dt/2.65,Math.abs(state.target-state.progress)),0,1);applyMotion();const moving=Math.abs(state.progress-state.target)>.001;for(const [id,value]of [['robot',0],['vehicle',1]])$(id).setAttribute('aria-pressed',state.target===value);$('transform-label').textContent=state.target?'Transform to robot':'Transform to vehicle';$('explode').disabled=moving;$('separation').disabled=moving;$('eyes').disabled=state.progress>.04;$('explode').setAttribute('aria-pressed',state.explode>.01);$('assembly-label').textContent=state.explode>.01?'Reassemble':'Exploded view';$('separation').value=Math.round(state.separation*100);$('separation-value').textContent=`${Math.round(state.separation*100)}%`;$('status').textContent=moving?'TRANSFORMATION IN PROGRESS':state.separation>.01?'COMPONENT EXPLORATION':state.target?'VEHICLE SYSTEMS READY':'GUARDIAN SYSTEMS READY';$('sequence-label').textContent=moving?'MECHANICAL SEQUENCE':state.target?'VEHICLE STANDBY':'GUARDIAN STANDBY';$('sequence-progress').style.width=`${state.progress*100}%`;$('sequence-number').textContent=`${String(Math.round(state.progress*100)).padStart(2,'0')} / 100`;$('form-index').textContent=state.target?'02 / VEHICLE FORM':'01 / ROBOT FORM';$('part-count').textContent=state.target?'VEHICLE CONFIGURATION':'177 ORIGINAL ROBOT COMPONENTS';}
