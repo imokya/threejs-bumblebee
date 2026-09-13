@@ -99,11 +99,11 @@ async function load(){const draco=new DRACOLoader();draco.setDecoderPath('/vendo
  {
  const grid=positionWorld.div(.055);
  const normal=normalize(cross(dFdx(positionWorld),dFdy(positionWorld)));
- const lines=abs(fract(grid.sub(.5)).sub(.5)).div(max(fwidth(grid),vec3(.0001))).add(step(vec3(.88),abs(normal)).mul(100));
+ const lines=abs(fract(grid.sub(.5)).sub(.5)).div(max(fwidth(grid),vec3(.002))).add(step(vec3(.88),abs(normal)).mul(100));
  const line=smoothstep(.25,1.05,min(lines.x,min(lines.y,lines.z))).oneMinus();
  const region=mix(scan.from,scan.to,step(scan.height,positionWorld.y));
  const wireMat=new THREE.MeshBasicNodeMaterial({transparent:true,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,depthTest:false,depthWrite:false,toneMapped:false,forceSinglePass:true});
- wireMat.colorNode=vec3(.08,2.4,1.5);wireMat.opacityNode=line.mul(.16);wireMat.maskNode=line.greaterThan(.01);
+ wireMat.colorNode=vec3(.08,2.4,1.5);wireMat.opacityNode=line.mul(.22);wireMat.maskNode=line.greaterThan(.001);
  for(const part of parts){part.wire=new THREE.Mesh(part.mesh.geometry,wireMat);part.wire.frustumCulled=false;part.wire.visible=false;part.wire.raycast=()=>{};part.mesh.add(part.wire);}
  }
  if(parts.filter(p=>p.mesh.name.startsWith('Original_robot')).length!==177)throw Error('Incomplete robot geometry');applyMotion();scene.updateMatrixWorld(true);
