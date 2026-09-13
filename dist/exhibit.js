@@ -97,8 +97,8 @@ async function load(){const draco=new DRACOLoader();draco.setDecoderPath('/vendo
  mesh.material=mat;
  });
  {
- const wireMat=new THREE.LineBasicMaterial({color:0x16e6c0,transparent:true,opacity:.14,blending:THREE.AdditiveBlending,depthTest:false,depthWrite:false,toneMapped:false});
- for(const part of parts){const wireGeometry=new THREE.WireframeGeometry(part.mesh.geometry);part.wire=new THREE.LineSegments(wireGeometry,wireMat);part.wire.frustumCulled=false;part.wire.visible=false;part.wire.raycast=()=>{};part.mesh.add(part.wire);}
+ const wireMat=new THREE.LineBasicMaterial({color:0x16e6c0,transparent:false,opacity:1,side:THREE.DoubleSide,depthTest:false,depthWrite:false,toneMapped:false});
+ for(const part of parts){const wireGeometry=new THREE.WireframeGeometry(part.mesh.geometry);part.wire=new THREE.LineSegments(wireGeometry,wireMat);part.wire.renderOrder=1000;part.wire.frustumCulled=false;part.wire.visible=false;part.wire.raycast=()=>{};part.mesh.add(part.wire);}
  }
  if(parts.filter(p=>p.mesh.name.startsWith('Original_robot')).length!==177)throw Error('Incomplete robot geometry');applyMotion();scene.updateMatrixWorld(true);
  const head=parts.find(p=>p.mesh.name==='Original_robot_3')?.mesh;if(head){eyeGroup=new THREE.Group();head.add(eyeGroup);for(const x of [-.074,.074]){const eye=new THREE.Mesh(new THREE.SphereGeometry(.019,16,12),new THREE.MeshBasicMaterial({color:new THREE.Color(.2,3,7),toneMapped:false}));eye.position.copy(head.worldToLocal(new THREE.Vector3(x,3.31,.32)));eye.scale.set(1,.8,.5);eyeGroup.add(eye);const glow=new THREE.PointLight(0x35aaff,.7,.5,2);glow.position.copy(eye.position);glow.position.z+=.04;eyeGroup.add(glow);}eyeGroup.visible=false;}
