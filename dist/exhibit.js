@@ -78,7 +78,7 @@ function applyMotion(){const eased=state.progress*state.progress*(3-2*state.prog
  modelRoot.position.y=Math.max(0,.025-explodedBounds.min.y);
  }
  }
- if(eyeGroup){const settled=Math.abs(state.progress-state.target)<.001;eyeGroup.visible=state.eyes&&state.progress<.04;for(const child of eyeGroup.children)if(child.isPointLight)child.intensity=state.eyes&&settled?.7:0;}
+ if(eyeGroup)eyeGroup.visible=state.eyes&&state.progress<.04;
 }
 function addHotspot(name,title,copy,position){const mesh=parts.find(p=>p.mesh.name===name)?.mesh;if(!mesh)return;const local=mesh.worldToLocal(new THREE.Vector3(...position));const button=document.createElement('button');button.className='hotspot';button.textContent='+';button.dataset.label=title.toUpperCase();button.setAttribute('aria-label',`Inspect ${title}`);$('hotspots').append(button);const spot={mesh,local,button};spots.push(spot);button.onclick=()=>{const point=mesh.localToWorld(local.clone());const screen=point.clone().project(camera);const vw=$('viewport').clientWidth,vh=$('viewport').clientHeight,sx=(screen.x*.5+.5)*vw,sy=(-screen.y*.5+.5)*vh;const panelW=280,panelH=190;const shoulder=title.toLowerCase().includes('shoulder');let px=shoulder?vw-panelW-450:(screen.x>0?sx-panelW-28:sx+28);let py=sy-panelH*.5;px=Math.max(16,Math.min(vw-panelW-16,px));py=Math.max(80,Math.min(vh-panelH-24,py));$('inspection').style.left=`${px}px`;$('inspection').style.right='auto';$('inspection').style.top=`${py}px`;$('inspection').style.transform='none';$('inspection').classList.toggle('detail-left',screen.x>0);$('inspection').classList.toggle('detail-right',screen.x<=0);focus={position:point.clone().add(new THREE.Vector3(1.25,.35,3.15)),target:point};controls.autoRotate=false;document.body.classList.add('inspecting');$('inspection').hidden=false;$('inspect-title').textContent=title;$('inspect-copy').textContent=copy;};}
 async function load(){const draco=new DRACOLoader();draco.setDecoderPath('/vendor/draco/');const loader=new GLTFLoader();loader.setDRACOLoader(draco);const [gltf,motion]=await Promise.all([loader.loadAsync('/assets/guardian.glb',e=>{$('load-progress').style.width=`${e.total?Math.min(95,e.loaded/e.total*95):45}%`;}),fetch('/assets/guardian-motion.json').then(r=>{if(!r.ok)throw Error('Motion data unavailable');return r.json();})]);
@@ -101,9 +101,8 @@ async function load(){const draco=new DRACOLoader();draco.setDecoderPath('/vendo
  const normal=normalize(cross(dFdx(positionWorld),dFdy(positionWorld)));
  const lines=abs(fract(grid.sub(.5)).sub(.5)).div(max(fwidth(grid),vec3(.0001))).add(step(vec3(.88),abs(normal)).mul(100));
  const line=smoothstep(.25,1.05,min(lines.x,min(lines.y,lines.z))).oneMinus();
- const region=mix(scan.from,scan.to,step(scan.height,positionWorld.y));
  const wireMat=new THREE.MeshBasicNodeMaterial({transparent:true,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,depthTest:false,depthWrite:false,toneMapped:false,forceSinglePass:true});
- wireMat.colorNode=vec3(.08,2.4,1.5);wireMat.opacityNode=line.mul(.16);wireMat.maskNode=region.greaterThan(.5).and(line.greaterThan(.01));
+ wireMat.colorNode=vec3(.08,2.4,1.5);wireMat.opacityNode=line.mul(.16);
  for(const part of parts){part.wire=new THREE.Mesh(part.mesh.geometry,wireMat);part.wire.frustumCulled=false;part.wire.visible=false;part.wire.raycast=()=>{};part.mesh.add(part.wire);}
  }
  if(parts.filter(p=>p.mesh.name.startsWith('Original_robot')).length!==177)throw Error('Incomplete robot geometry');applyMotion();scene.updateMatrixWorld(true);
