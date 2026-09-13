@@ -83,3 +83,4 @@ main{display:block;position:relative;background:#090b0d}
 .view-tools{gap:14px}
 @media(max-width:760px){.view-tools{gap:8px}}
 .inspecting .console{opacity:1;pointer-events:auto;transform:none}
+.author-link{position:fixed;top:24px;right:28px;z-index:20;display:inline-flex;align-items:center;gap:10px;padding:11px 15px;border:1px solid #ffffff20;border-radius:6px;background:#0c1014aa;backdrop-filter:blur(12px);color:#bfc4c8;text-decoration:none!important;font-size:11px;letter-spacing:1.4px;transition:.2s}.author-link strong{color:#e9e6db;font-weight:500}.author-link span{color:var(--gold);font-size:16px}.author-link:hover{color:var(--gold);border-color:#ffc6406b}.hotspot{animation:hotspot-pulse 1.5s ease-in-out infinite}@keyframes hotspot-pulse{0%,100%{transform:translate(-50%,-50%) scale(1);box-shadow:0 0 0 5px #ffc64012}50%{transform:translate(-50%,-50%) scale(1.2);box-shadow:0 0 0 12px #ffc6402b}}
