@@ -46,8 +46,8 @@ const perlin=await new THREE.TextureLoader().loadAsync('/textures/noises/perlin/
 perlin.wrapS=perlin.wrapT=THREE.RepeatWrapping;perlin.colorSpace=THREE.SRGBColorSpace;
 const floorRoughness=texture(perlin,uv().mul(30)).r.mul(2).saturate();
 const floorMaterial=new THREE.MeshStandardNodeMaterial({transparent:true,metalness:1});
-floorMaterial.roughnessNode=floorRoughness.mul(.2);
-floorMaterial.colorNode=vec4(textureBicubic(reflection,floorRoughness.mul(.42)).rgb.mul(1.9),rangeFogFactor(12,30).oneMinus());
+floorMaterial.roughnessNode=floorRoughness.mul(.42);
+floorMaterial.colorNode=vec4(textureBicubic(reflection,floorRoughness.mul(.58)).rgb.mul(1.35),rangeFogFactor(12,30).oneMinus());
 const floor=new THREE.Mesh(new THREE.PlaneGeometry(100,100),floorMaterial);
 floor.rotation.x=-Math.PI/2;floor.position.y=floorY;scene.add(floor);
 
@@ -97,8 +97,13 @@ async function load(){const draco=new DRACOLoader();draco.setDecoderPath('/vendo
  mesh.material=mat;
  });
  {
- const wireMat=new THREE.MeshBasicNodeMaterial({wireframe:true,transparent:false,side:THREE.DoubleSide,depthTest:false,depthWrite:false,toneMapped:false,forceSinglePass:true});
- wireMat.color=new THREE.Color(0.02,0.9,0.72);
+ const grid=positionWorld.div(.055);
+ const normal=normalize(cross(dFdx(positionWorld),dFdy(positionWorld)));
+ const lines=abs(fract(grid.sub(.5)).sub(.5)).div(max(fwidth(grid),vec3(.0001))).add(step(vec3(.88),abs(normal)).mul(100));
+ const line=smoothstep(.25,1.05,min(lines.x,min(lines.y,lines.z))).oneMinus();
+ const region=mix(scan.from,scan.to,step(scan.height,positionWorld.y));
+ const wireMat=new THREE.MeshBasicNodeMaterial({transparent:true,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,depthTest:false,depthWrite:false,toneMapped:false,forceSinglePass:true});
+ wireMat.colorNode=vec3(.08,2.4,1.5);wireMat.opacityNode=line.mul(.16);wireMat.maskNode=region.greaterThan(.5).and(line.greaterThan(.01));
  for(const part of parts){part.wire=new THREE.Mesh(part.mesh.geometry,wireMat);part.wire.frustumCulled=false;part.wire.visible=false;part.wire.raycast=()=>{};part.mesh.add(part.wire);}
  }
  if(parts.filter(p=>p.mesh.name.startsWith('Original_robot')).length!==177)throw Error('Incomplete robot geometry');applyMotion();scene.updateMatrixWorld(true);
