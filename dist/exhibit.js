@@ -1,5 +1,5 @@
 import * as THREE from 'three/webgpu';
-import {uniform,positionWorld,vec3,vec4,mix,step,smoothstep,abs,fract,fwidth,max,min,normalize,cross,dFdx,dFdy,exp,texture,pass,materialColor,materialEmissive} from 'three/tsl';
+import {uniform,positionWorld,vec3,vec4,mix,step,smoothstep,abs,fract,fwidth,max,min,normalize,cross,dFdx,dFdy,exp,texture,pass,materialColor,materialEmissive,reflector,textureBicubic,rangeFogFactor,uv} from 'three/tsl';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
@@ -38,7 +38,19 @@ const camera=new THREE.PerspectiveCamera(33,1,.03,50);camera.position.set(4,2.9,
 const controls=new OrbitControls(camera,$('canvas'));controls.target.set(0,1.72,0);controls.enableDamping=true;controls.enablePan=false;controls.minDistance=.6;controls.maxDistance=13;controls.maxPolarAngle=Math.PI*.49;controls.autoRotateSpeed=.65;
 const key=new THREE.DirectionalLight('#fff0cf',2.2);key.position.set(-3,6,4);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.camera.left=-4;key.shadow.camera.right=4;key.shadow.camera.top=5;key.shadow.camera.bottom=-4;key.shadow.normalBias=.025;scene.add(key);
 const rim=new THREE.DirectionalLight('#779fff',2);rim.position.set(3,4,-3);scene.add(rim);const fill=new THREE.DirectionalLight('#ffffff',.8);fill.position.set(1,3,5);scene.add(fill);scene.add(new THREE.HemisphereLight('#b8d4ff','#4c3418',.7));
-const floor=new THREE.Mesh(new THREE.PlaneGeometry(100,100),new THREE.MeshStandardMaterial({color:'#080a0d',roughness:.6,metalness:.2}));floor.rotation.x=-Math.PI/2;floor.position.y=-.007;floor.receiveShadow=true;scene.add(floor);
+// Roughness reflection: mipmapped planar reflection sampled with bicubic filtering.
+const floorY=-.007;
+const reflection=reflector({resolutionScale:.5,bounces:false,generateMipmaps:true});
+reflection.target.rotation.x=-Math.PI/2;reflection.target.position.y=floorY;scene.add(reflection.target);
+const perlin=await new THREE.TextureLoader().loadAsync('/textures/noises/perlin/rgb-256x256.png');
+perlin.wrapS=perlin.wrapT=THREE.RepeatWrapping;perlin.colorSpace=THREE.SRGBColorSpace;
+const floorRoughness=texture(perlin,uv().mul(30)).r.mul(2).saturate();
+const floorMaterial=new THREE.MeshStandardNodeMaterial({transparent:true,metalness:1});
+floorMaterial.roughnessNode=floorRoughness.mul(.2);
+floorMaterial.colorNode=vec4(textureBicubic(reflection,floorRoughness.mul(.9)).rgb,rangeFogFactor(7,25).oneMinus());
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(100,100),floorMaterial);
+floor.rotation.x=-Math.PI/2;floor.position.y=floorY;scene.add(floor);
+
 for(const radius of [2.1,2.15]){const ring=new THREE.Mesh(new THREE.TorusGeometry(radius,.003,6,160),new THREE.MeshBasicMaterial({color:'#8a692c'}));ring.rotation.x=Math.PI/2;ring.position.y=.002;scene.add(ring);}
 const composer=new THREE.PostProcessing(renderer);composer.outputNode=pass(scene,camera).getTextureNode();
 let focus=null,formCameraTimer=0;function home(){document.body.classList.remove('inspecting');$('inspection').hidden=true;focus={position:new THREE.Vector3(state.target?4:4,state.target?2.5:2.9,state.explode?10:state.target?6.5:7.6),target:new THREE.Vector3(0,state.target?.7:1.72,0)};}
