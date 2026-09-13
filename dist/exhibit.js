@@ -1,5 +1,5 @@
 import * as THREE from 'three/webgpu';
-import {uniform,positionWorld,vec3,vec4,mix,step,smoothstep,abs,fract,fwidth,max,min,normalize,cross,dFdx,dFdy,exp,texture,pass} from 'three/tsl';
+import {uniform,positionWorld,vec3,vec4,mix,step,smoothstep,abs,fract,fwidth,max,min,normalize,cross,dFdx,dFdy,exp,texture,pass,materialColor,materialEmissive} from 'three/tsl';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
@@ -65,14 +65,14 @@ async function load(){const draco=new DRACOLoader();draco.setDecoderPath('/vendo
  const mat=new THREE.MeshStandardNodeMaterial();
  for(const key of ['map','normalMap','roughnessMap','metalnessMap','aoMap','emissiveMap','roughness','metalness','aoMapIntensity','side'])if(source[key]!==undefined)mat[key]=source[key];
  mat.color.copy(source.color);mat.emissive.copy(source.emissive);mat.normalScale.copy(source.normalScale);
- const base=source.map?texture(source.map).rgb.mul(vec3(source.color)):vec3(source.color);
+ const base=materialColor.rgb;
  const mask=smoothstep(.035,.16,base.r.sub(base.b)).mul(smoothstep(.02,.12,base.g.sub(base.b))).mul(smoothstep(.07,.3,base.r));
  const band=smoothstep(colorHeight.sub(.28),colorHeight.add(.32),positionWorld.y).mul(colorProgress);
  mat.colorNode=mix(base,mix(colorStart,tint,band).mul(max(base.r,base.g)),mask.mul(mix(amountStart,tintAmount,band)));
  const region=mix(scan.from,scan.to,step(scan.height,positionWorld.y));
  mat.maskNode=region.lessThan(.5).or(scan.active.greaterThan(.5).and(abs(positionWorld.y.sub(scan.height)).lessThan(.035)));
  const laser=exp(positionWorld.y.sub(scan.height).div(.022).pow(2).negate()).mul(scan.active);
- mat.emissiveNode=vec3(source.emissive).add(vec3(.15,5,9).mul(laser));
+ mat.emissiveNode=materialEmissive.add(vec3(.15,5,9).mul(laser));
  mesh.material=mat;
  });
  for(const part of parts){
