@@ -24,7 +24,8 @@ function updateScan(dt){
   scan.height.value=THREE.MathUtils.lerp(scanBounds.max.y+.12,scanBounds.min.y-.12,t);
   if(t===1){scan.active.value=0;scan.from.value=scan.to.value;$('wireframe').disabled=false;$('wireframe').querySelector('i').textContent=scan.to.value?'MESH':'SOLID';$('wireframe').setAttribute('aria-label',scan.to.value?'Scan back to solid materials':'Scan into wireframe view');}
  }
- for(const p of parts)p.wire.visible=scan.active.value===1||scan.to.value===1;
+ const wireOn=scan.active.value===1||scan.to.value===1;
+ for(const p of parts){p.wire.visible=wireOn;if(wireOn)p.mesh.visible=state.target===0?p.mesh.name.startsWith('Original_'):p.mesh.name.startsWith('Car_');}
 }
 let renderer;
 function fail(error){console.error(error);$('loading').classList.remove('finished');$('load-title').textContent='The guardian could not load.';$('load-status').textContent='Please reload the page. WebGL and a local web server are required.';$('retry').hidden=false;}
@@ -101,8 +102,9 @@ async function load(){const draco=new DRACOLoader();draco.setDecoderPath('/vendo
  const normal=normalize(cross(dFdx(positionWorld),dFdy(positionWorld)));
  const lines=abs(fract(grid.sub(.5)).sub(.5)).div(max(fwidth(grid),vec3(.0001))).add(step(vec3(.88),abs(normal)).mul(100));
  const line=smoothstep(.25,1.05,min(lines.x,min(lines.y,lines.z))).oneMinus();
+ const region=mix(scan.from,scan.to,step(scan.height,positionWorld.y));
  const wireMat=new THREE.MeshBasicNodeMaterial({transparent:true,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,depthTest:false,depthWrite:false,toneMapped:false,forceSinglePass:true});
- wireMat.colorNode=vec3(.08,2.4,1.5);wireMat.opacityNode=line.mul(.16).add(.045);
+ wireMat.colorNode=vec3(.08,2.4,1.5);wireMat.opacityNode=line.mul(.16);wireMat.maskNode=region.greaterThan(.5).and(line.greaterThan(.01));
  for(const part of parts){part.wire=new THREE.Mesh(part.mesh.geometry,wireMat);part.wire.frustumCulled=false;part.wire.visible=false;part.wire.raycast=()=>{};part.mesh.add(part.wire);}
  }
  if(parts.filter(p=>p.mesh.name.startsWith('Original_robot')).length!==177)throw Error('Incomplete robot geometry');applyMotion();scene.updateMatrixWorld(true);
