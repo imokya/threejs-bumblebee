@@ -58,7 +58,7 @@ controls.addEventListener('start',()=>{focus=null;controls.autoRotate=false;$('o
 $('reset').onclick=home;$('close-inspection').onclick=home;$('inspect-back').onclick=home;
 $('orbit').onclick=()=>{controls.autoRotate=!controls.autoRotate;focus=null;$('orbit').setAttribute('aria-pressed',controls.autoRotate);$('orbit').querySelector('i').textContent=controls.autoRotate?'ON':'OFF';};
 $('lighting').onclick=()=>{const night=$('lighting').getAttribute('aria-pressed')!=='true';$('lighting').setAttribute('aria-pressed',night);$('lighting').querySelector('i').textContent=night?'MIDNIGHT':'STUDIO';key.intensity=night?.7:2.2;rim.intensity=night?3:2;fill.intensity=night?.25:.8;scene.environmentIntensity=night?.12:.25;};
-$('eyes').onclick=()=>{state.eyes=!state.eyes;$('eyes').setAttribute('aria-pressed',state.eyes);$('eyes').querySelector('i').textContent=state.eyes?'ON':'OFF';};
+$('eyes').onclick=()=>{state.eyes=!state.eyes;if(eyeGroup)eyeGroup.visible=state.eyes&&state.progress<.04;$('eyes').setAttribute('aria-pressed',state.eyes);$('eyes').querySelector('i').textContent=state.eyes?'ON':'OFF';};
 function form(target){state.target=target;state.explode=0;document.body.classList.remove('inspecting');$('inspection').hidden=true;clearTimeout(formCameraTimer);if(target===1){focus=null;formCameraTimer=setTimeout(home,1100);}else home();}
 $('robot').onclick=()=>form(0);$('vehicle').onclick=()=>form(1);$('transform').onclick=()=>form(1-state.target);
 $('explode').onclick=()=>{state.explode=state.explode>.01?0:1;home();};$('separation').oninput=e=>{state.explode=Number(e.target.value)/100;};
@@ -107,7 +107,7 @@ async function load(){const draco=new DRACOLoader();draco.setDecoderPath('/vendo
  for(const part of parts){part.wire=new THREE.Mesh(part.mesh.geometry,wireMat);part.wire.frustumCulled=false;part.wire.visible=false;part.wire.raycast=()=>{};part.mesh.add(part.wire);}
  }
  if(parts.filter(p=>p.mesh.name.startsWith('Original_robot')).length!==177)throw Error('Incomplete robot geometry');applyMotion();scene.updateMatrixWorld(true);
- const head=parts.find(p=>p.mesh.name==='Original_robot_3')?.mesh;if(head){eyeGroup=new THREE.Group();head.add(eyeGroup);for(const x of [-.074,.074]){const eye=new THREE.Mesh(new THREE.SphereGeometry(.019,16,12),new THREE.MeshBasicMaterial({color:new THREE.Color(.2,3,7)}));eye.position.copy(head.worldToLocal(new THREE.Vector3(x,3.31,.32)));eye.scale.set(1,.8,.5);eyeGroup.add(eye);const glow=new THREE.PointLight(0x35aaff,.7,.5,2);glow.position.copy(eye.position);glow.position.z+=.04;eyeGroup.add(glow);}eyeGroup.visible=false;}
+ const head=parts.find(p=>p.mesh.name==='Original_robot_3')?.mesh;if(head){eyeGroup=new THREE.Group();head.add(eyeGroup);for(const x of [-.074,.074]){const eye=new THREE.Mesh(new THREE.SphereGeometry(.019,16,12),new THREE.MeshBasicMaterial({color:new THREE.Color(.2,3,7),toneMapped:false}));eye.position.copy(head.worldToLocal(new THREE.Vector3(x,3.31,.32)));eye.scale.set(1,.8,.5);eyeGroup.add(eye);}eyeGroup.visible=false;}
  addHotspot('Original_robot_3','Optical core','A familiar blue gaze. Activate the optics to bring the guardian to life.',[0,3.31,.28]);addHotspot('Original_robot_23','Chest armor','The signature vintage bodywork becomes the guardian’s protective chest armor.',[0,2.7,.4]);addHotspot('Original_robot_1','Shoulder assembly','Explore the layered armor and mechanical components in exploded view.',[.64,2.91,.06]);
  // Compile hidden vehicle components before the first transformation.
  const visibility=parts.map(p=>p.mesh.visible);
